@@ -1,0 +1,76 @@
+{
+  "rules": {
+    "general_rules": [
+      {
+        "description": "Before proposing any changes, perform a dependency analysis to identify all files, functions, and components that directly or indirectly depend on the code being modified. Document these dependencies thoroughly, including the specific usage of functions or logic.",
+        "type": "dependency_analysis"
+      },
+      {
+        "description": "Before proposing any changes, conduct a complete end-to-end flow analysis of the relevant use case from the entry point (e.g., UI interaction, API endpoint) to the execution of all affected code. Track the flow of data and logic throughout all components involved to understand its full scope.",
+        "type": "flow_analysis"
+      },
+      {
+        "description": "Simulate user interactions and behaviors by performing dry runs, trace calls, or other appropriate methods to rigorously analyze the impact of proposed changes on both expected and edge-case scenarios. Generate feedback on all potential side effects.",
+        "type": "simulation_analysis"
+      },
+      {
+        "description": "Do not propose a change unless the simulation passes and verifies that all existing functionality is preserved, and if a simulation breaks, provide fixes immediately before proceeding.",
+        "type": "simulation_validation"
+      },
+      {
+        "description": "Ensure that all new code integrates seamlessly with existing project structure and architecture before committing changes. Do not make changes that disrupt existing code organization or files.",
+        "type": "architecture_preservation"
+      },
+      {
+        "description": "Limit the scope of code changes to only the directly modified function and it's immediate dependencies. Avoid making unrelated modifications in files other than these.",
+        "type": "change_scope"
+      },
+      {
+        "description": "Never modify existing dependencies or remove used logic or functionality that is currently required by any other files, functions, or code snippets unless needed by a new functionality, and only after a thorough and explicit explanation of the impact is provided; always try to add changes without touching existing code, or add an alternative code pathway so both can be used if they are still valid.",
+        "type": "dependency_preservation"
+      },
+      {
+        "description": "Adhere strictly to the existing coding style, do not make formatting changes.",
+        "type": "style_preservation"
+      },
+      {
+        "description": "Dont use *ngIf and *ngFor. Use @if and @for instead.",
+        "type": "ng_if_ng_for_replacement"
+      }
+    ],
+    "ai_reasoning": [
+      {
+        "description": "Before providing a solution, ensure you have completed all required analyses (dependency, flow, and impact) and that the simulation validation passes. If not, pause and verify the analyses and simulation results, or request for clarification.",
+        "type": "pre_change_checklist"
+      },
+      {
+        "description": "Outline a detailed plan including component dependencies, architectural considerations and API changes before coding. Explain all code changes, what each part does, and how it affects other areas.",
+        "type": "step_by_step_reasoning"
+      },
+      {
+        "description": "Provide a proposal that specifies: 1) what files, functions, or lines of code are being changed; 2) why the change is necessary (i.e. bug fix, improvement or new feature); 3) all of the directly impacted modules or files; 4) potential side effects; 5) a detailed explanation of any tradeoffs.",
+        "type": "structured_proposals"
+      }
+    ],
+    "testing": [
+      {
+        "description": "Create unit tests for any new functionality. Run all tests from the dependency analysis to confirm that existing behavior is still as expected.",
+        "type": "dependency_based_testing"
+      },
+      {
+        "description": "After you propose a change, run the tests yourself, and verify that it passes. Do not rely on me to do this, and be certain that my code will not be broken.",
+        "type": "no_breakage_assertion"
+      },
+      {
+        "description": "Make changes incrementally, test after each change, verify that it works correctly before moving on to the next change.",
+        "type": "incremental_rollouts"
+      }
+    ],
+    "code_style": {
+      "language": "TypeScript",
+      "prefer_functional_patterns": true,
+      "code_modifications": "Provide the complete file content with only the necessary modifications and code changes. Code should be concise, readable, and highly modular. Ensure that the implementation is bug-free, performant, secure, and fully functional.",
+      "comments": "Ensure existing comments are preserved and do not remove previous comments"
+    }
+  }
+}
