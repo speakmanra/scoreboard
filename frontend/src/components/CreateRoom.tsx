@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { roomApi } from '../services/api';
 import { CreateRoomData } from '../types';
 
