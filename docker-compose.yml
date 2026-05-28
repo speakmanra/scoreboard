@@ -1,0 +1,47 @@
+# Created by Agent Hub Preview Setup wizard.
+# Two-service preview for the Scorecard app:
+#   - backend:  Django REST API on :8000 (not iframed; reached via in-container proxy)
+#   - frontend: CRA dev server on :3000 (browser entry, iframed by preview)
+#
+# The browser only ever talks to the frontend service. The frontend's
+# CRA dev server uses src/setupProxy.js to forward /api, /admin and
+# /static to http://backend:8000 over the compose network, so requests
+# stay same-origin (no CORS).
+services:
+  backend:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DEBUG=True
+      - ALLOWED_HOSTS=*
+      - SECRET_KEY=preview-only-not-secret
+      - PYTHONUNBUFFERED=1
+    expose:
+      - "8000"
+
+  frontend:
+    image: node:22-bookworm-slim
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install --no-audit --no-fund && npm start"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - WDS_SOCKET_PORT=0
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
+      - REACT_APP_API_URL=/api
+      - BACKEND_URL=http://backend:8000
+      - BROWSER=none
+    ports:
+      - "${AGENTHUB_HOST_PORT:-3000}:3000"
+    depends_on:
+      - backend
