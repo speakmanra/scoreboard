@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -sf -H 'Content-Type: application/json' -d '{\"sessionId\":\"d993a185-8d51-4789-8457-af452e7971e8\"}' http://localhost:3051/api/hooks/stop"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); if command -v jq >/dev/null 2>&1; then cmd=$(printf '%s' \"$input\" | jq -r '.tool_input.command // empty'); else cmd=\"\"; fi; case \"$cmd\" in *'git commit'*) cd \"$CLAUDE_PROJECT_DIR\" && npm run format:check || exit 2 ;; esac; # [agent-hub-format-guard]"
+          }
+        ]
+      }
+    ]
+  }
+}
