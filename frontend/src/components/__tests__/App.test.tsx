@@ -15,7 +15,7 @@ describe('App Routing', () => {
       </MemoryRouter>
     );
     
-    expect(screen.getByText('🎲 Scorecard App')).toBeInTheDocument();
+    expect(screen.getByText('Scorecard App')).toBeInTheDocument();
     expect(screen.getByText('Create or join a room to start tracking scores')).toBeInTheDocument();
   });
 
@@ -37,6 +37,6 @@ describe('App Routing', () => {
       </MemoryRouter>
     );
     
-    expect(screen.getByText('🎲 Scorecard App')).toBeInTheDocument();
+    expect(screen.getByText('Scorecard App')).toBeInTheDocument();
   });
 }); 

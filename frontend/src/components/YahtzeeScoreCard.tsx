@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { scoreApi, playerApi, roomApi } from '../services/api';
 import { Room, Score, Player, CreateScoreData, YahtzeeCategory } from '../types';
+import { Dices, X } from 'lucide-react';
 
 interface YahtzeeScoreCardProps {
   room: Room;
@@ -244,7 +245,7 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
               onClick={() => removeToast(toast.id)}
               aria-label="Close notification"
             >
-              ×
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
         ))}
@@ -301,9 +302,9 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
               <button
                 onClick={handleStartGame}
                 className="btn btn-success"
-                style={{ marginTop: '20px' }}
+                style={{ marginTop: '20px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
               >
-                🎲 Start Yahtzee Game
+                <Dices size={20} aria-hidden="true" /> Start Yahtzee Game
               </button>
             </div>
           )}

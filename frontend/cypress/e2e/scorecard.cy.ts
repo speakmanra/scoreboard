@@ -7,7 +7,7 @@ describe('Scorecard Application', () => {
 
   it('should load the home page successfully', () => {
     // Check if the main elements are visible
-    cy.get('h1').should('contain', '🎲 Scorecard App')
+    cy.get('h1').should('contain', 'Scorecard App')
     cy.get('.card').should('have.length.at.least', 1)
     cy.get('button').should('contain', 'Create Room')
     cy.get('button').should('contain', 'Join Room')

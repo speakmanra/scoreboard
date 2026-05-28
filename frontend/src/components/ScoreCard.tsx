@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { scoreApi, playerApi, roomApi } from '../services/api';
 import { Room, Score, Player, CreateScoreData } from '../types';
 import YahtzeeScoreCard from './YahtzeeScoreCard';
+import { X } from 'lucide-react';
 
 interface ScoreCardProps {
   room: Room;
@@ -146,7 +147,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({ room, currentPlayer }) => {
               onClick={() => removeToast(toast.id)}
               aria-label="Close notification"
             >
-              ×
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
         ))}
