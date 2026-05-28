@@ -58,7 +58,7 @@ const Home: React.FC = () => {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
         <CreateRoom onRoomCreated={handleRoomCreated} showToast={showToast} />
         <JoinRoom onRoomJoined={handleRoomJoined} showToast={showToast} />
       </div>
