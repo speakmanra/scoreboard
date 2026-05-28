@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { roomApi } from '../services/api';
 
 interface JoinRoomProps {
-  onRoomJoined: (roomCode: string, playerName: string) => void;
+  onRoomJoined: (roomCode: string, playerId: string) => void;
   showToast: (message: string, type: 'success' | 'error' | 'info') => void;
 }
 
@@ -18,12 +18,14 @@ const JoinRoom: React.FC<JoinRoomProps> = ({ onRoomJoined, showToast }) => {
     try {
       // First, get the room by code
       const room = await roomApi.getByCode(roomCode);
-      
-      // Then join the room
-      await roomApi.join(room.id, { name: playerName });
-      
+
+      // Then join the room. The join endpoint is idempotent by name and
+      // returns the Player (with its stable UUID), which we use to identify
+      // "you" reliably — names alone are ambiguous (e.g. "Ryan" vs "Ryan2").
+      const player = await roomApi.join(room.id, { name: playerName });
+
       showToast(`Successfully joined room!`, 'success');
-      onRoomJoined(roomCode, playerName);
+      onRoomJoined(roomCode, player.id);
     } catch (err) {
       showToast('Failed to join room. Please check the room code and try again.', 'error');
       console.error('Error joining room:', err);

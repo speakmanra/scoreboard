@@ -1,42 +1,44 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import App from '../../App';
 
 // Mock the API services
 jest.mock('../../services/api');
 
+// App renders its own <BrowserRouter>, so we must NOT wrap it in another
+// Router. Instead we drive the route via the browser history before rendering.
+const setPath = (path: string) => {
+  window.history.pushState({}, '', path);
+};
+
 describe('App Routing', () => {
+  afterEach(() => {
+    setPath('/');
+  });
+
   it('should render home page at root path', () => {
-    render(
-      <MemoryRouter initialEntries={['/']}>
-        <App />
-      </MemoryRouter>
-    );
-    
+    setPath('/');
+    render(<App />);
+
     expect(screen.getByText('Scorecard App')).toBeInTheDocument();
-    expect(screen.getByText('Create or join a room to start tracking scores')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Create or join a room to start tracking scores/)
+    ).toBeInTheDocument();
   });
 
   it('should render room page at /room/:roomCode path', () => {
-    render(
-      <MemoryRouter initialEntries={['/room/ABC123']}>
-        <App />
-      </MemoryRouter>
-    );
-    
-    // Should show loading initially
+    setPath('/room/ABC123');
+    render(<App />);
+
+    // Should show loading initially while the room is fetched.
     expect(screen.getByText('Loading room...')).toBeInTheDocument();
   });
 
   it('should redirect to home for invalid paths', () => {
-    render(
-      <MemoryRouter initialEntries={['/invalid-path']}>
-        <App />
-      </MemoryRouter>
-    );
-    
+    setPath('/invalid-path');
+    render(<App />);
+
     expect(screen.getByText('Scorecard App')).toBeInTheDocument();
   });
-}); 
+});

@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 
 interface ScoreCardProps {
   room: Room;
-  currentPlayer: string;
+  currentPlayerId: string;
 }
 
 interface Toast {
@@ -15,7 +15,7 @@ interface Toast {
   type: 'success' | 'error' | 'info';
 }
 
-const ScoreCard: React.FC<ScoreCardProps> = ({ room, currentPlayer }) => {
+const ScoreCard: React.FC<ScoreCardProps> = ({ room, currentPlayerId }) => {
   const [scores, setScores] = useState<Score[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
@@ -128,7 +128,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({ room, currentPlayer }) => {
 
   // Render Yahtzee-specific scorecard for Yahtzee games
   if (room.game_type === 'yahtzee') {
-    return <YahtzeeScoreCard room={room} currentPlayer={currentPlayer} />;
+    return <YahtzeeScoreCard room={room} currentPlayerId={currentPlayerId} />;
   }
 
   if (loading) {
@@ -159,14 +159,23 @@ const ScoreCard: React.FC<ScoreCardProps> = ({ room, currentPlayer }) => {
         <div className="room-code">Room Code: {room.room_code}</div>
         
         <div className="score-grid">
-          {players.map(player => (
-            <div key={player.id} className="player-card">
-              <h3>{player.name}</h3>
-              <div className="total-score">
-                Total: {getPlayerTotal(player.id)}
+          {players.map(player => {
+            const isCurrentPlayer = player.id === currentPlayerId;
+            return (
+              <div
+                key={player.id}
+                className={isCurrentPlayer ? 'player-card current-player' : 'player-card'}
+              >
+                <h3>
+                  {player.name}
+                  {isCurrentPlayer && <span className="you-badge"> (You)</span>}
+                </h3>
+                <div className="total-score">
+                  Total: {getPlayerTotal(player.id)}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

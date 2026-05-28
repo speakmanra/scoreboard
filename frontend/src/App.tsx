@@ -38,10 +38,12 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleRoomJoined = async (roomCode: string, playerName: string) => {
+  const handleRoomJoined = async (roomCode: string, playerId: string) => {
     try {
       const room = await roomApi.getByCode(roomCode);
-      navigate(`/room/${roomCode}?player=${encodeURIComponent(playerName)}`);
+      // Carry the player's UUID (not name) so the scorecard can reliably
+      // identify "you" even when player names collide (e.g. "Ryan"/"Ryan2").
+      navigate(`/room/${roomCode}?player_id=${encodeURIComponent(playerId)}`);
     } catch (err) {
       showToast('Error loading joined room', 'error');
       console.error('Error loading joined room:', err);
@@ -92,7 +94,7 @@ const RoomPage: React.FC = () => {
   const { roomCode } = useParams<{ roomCode: string }>();
   const navigate = useNavigate();
   const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
-  const [currentPlayer, setCurrentPlayer] = useState<string>('');
+  const [currentPlayerId, setCurrentPlayerId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const { showToast } = React.useContext(ToastContext);
 
@@ -107,11 +109,13 @@ const RoomPage: React.FC = () => {
         const room = await roomApi.getByCode(roomCode);
         setCurrentRoom(room);
         
-        // Get player name from URL params if available
+        // Get the current player's UUID from URL params if available.
+        // Identifying "you" by id (not name) avoids collisions between
+        // players with similar names (e.g. "Ryan" vs "Ryan2").
         const urlParams = new URLSearchParams(window.location.search);
-        const playerName = urlParams.get('player');
-        if (playerName) {
-          setCurrentPlayer(decodeURIComponent(playerName));
+        const playerId = urlParams.get('player_id');
+        if (playerId) {
+          setCurrentPlayerId(decodeURIComponent(playerId));
         }
       } catch (err) {
         showToast('Room not found or error loading room', 'error');
@@ -149,7 +153,7 @@ const RoomPage: React.FC = () => {
           <ArrowLeft size={16} aria-hidden="true" /> Back to Home
         </button>
       </div>
-      <ScoreCard room={currentRoom} currentPlayer={currentPlayer} />
+      <ScoreCard room={currentRoom} currentPlayerId={currentPlayerId} />
     </div>
   );
 };
