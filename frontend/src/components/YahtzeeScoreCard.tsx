@@ -61,6 +61,18 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
     setToasts(prev => prev.filter(toast => toast.id !== id));
   }, []);
 
+  // A player may only edit their own column. currentPlayerId is the joined
+  // player's UUID, carried through the room URL (?player_id=). When it is
+  // empty (e.g. the host who created the room and never joined as a player),
+  // editing is left unrestricted so the host can still keep score.
+  const canEditPlayer = useCallback(
+    (playerId: string): boolean => {
+      if (!currentPlayerId) return true;
+      return playerId === currentPlayerId;
+    },
+    [currentPlayerId]
+  );
+
   const loadData = useCallback(async () => {
     try {
       const [scoresData, playersData] = await Promise.all([
@@ -110,6 +122,11 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
   };
 
   const handleCellClick = (playerId: string, category: YahtzeeCategory) => {
+    // Block edits to other players' columns.
+    if (!canEditPlayer(playerId)) {
+      showToast('You can only edit your own scores.', 'info');
+      return;
+    }
     const existingScore = getPlayerScore(playerId, category);
     setEditingCell({ playerId, category });
     setEditingValue(existingScore ? existingScore.score_value.toString() : '');
@@ -217,12 +234,19 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
       );
     }
 
+    const editable = canEditPlayer(playerId);
+    const baseClass = score ? 'filled' : 'empty';
+    const className = editable ? `${baseClass} clickable` : `${baseClass} not-editable`;
+    const title = editable
+      ? (score ? `Click to edit (current: ${score.score_value})` : 'Click to add score')
+      : 'You can only edit your own scores';
+
     return (
-      <td 
-        key={playerId} 
-        className={score ? 'filled clickable' : 'empty clickable'}
+      <td
+        key={playerId}
+        className={className}
         onClick={() => handleCellClick(playerId, category)}
-        title={score ? `Click to edit (current: ${score.score_value})` : 'Click to add score'}
+        title={title}
       >
         {score ? score.score_value : '-'}
       </td>
@@ -314,7 +338,9 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
         <div className="card">
           <h2>Yahtzee Scorecard</h2>
           <p className="scorecard-instructions">
-            Click on any cell to enter or edit a score. Press Enter to save or Escape to cancel.
+            {currentPlayerId
+              ? 'Click a cell in your own column to enter or edit a score. Press Enter to save or Escape to cancel.'
+              : 'Click on any cell to enter or edit a score. Press Enter to save or Escape to cancel.'}
           </p>
           
           <div className="yahtzee-scorecard">

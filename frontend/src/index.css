@@ -276,6 +276,12 @@ code {
   cursor: pointer;
 }
 
+/* Cells belonging to other players are read-only for the current viewer. */
+.scorecard-table .not-editable {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .scorecard-table .filled {
   background: var(--surface-alt);
   color: var(--heading-muted);
