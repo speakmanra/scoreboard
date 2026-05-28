@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useLayoutEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
 import CreateRoom from './components/CreateRoom';
 import JoinRoom from './components/JoinRoom';
@@ -53,7 +53,7 @@ const Home: React.FC = () => {
         <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>
           🎲 Scorecard App
         </h1>
-        <p style={{ textAlign: 'center', marginBottom: '30px', color: '#666' }}>
+        <p style={{ textAlign: 'center', marginBottom: '30px', color: 'var(--text-muted)' }}>
           Create or join a room to start tracking scores for Yahtzee, Scrabble, or any game!
         </p>
       </div>
@@ -137,7 +137,7 @@ const RoomPage: React.FC = () => {
 
   return (
     <div>
-      <div style={{ padding: '20px', background: '#f8f9fa', borderBottom: '1px solid #dee2e6' }}>
+      <div style={{ padding: '20px', background: 'var(--surface-alt)', borderBottom: '1px solid var(--border-alt)' }}>
         <button onClick={handleBackToHome} className="btn btn-secondary">
           ← Back to Home
         </button>
@@ -147,9 +147,44 @@ const RoomPage: React.FC = () => {
   );
 };
 
+type Theme = 'light' | 'dark';
+
+// Resolve the initial theme: a previously saved choice wins, otherwise fall
+// back to the operating system's color-scheme preference.
+const getInitialTheme = (): Theme => {
+  try {
+    const saved = window.localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') {
+      return saved;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+  } catch (err) {
+    // localStorage / matchMedia may be unavailable (e.g. privacy mode); fall through.
+  }
+  return 'light';
+};
+
 // Main App Component
 const App: React.FC = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+
+  // Apply the active theme to the document root before paint (useLayoutEffect
+  // avoids a flash of the wrong theme on first load) and persist the choice.
+  useLayoutEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      window.localStorage.setItem('theme', theme);
+    } catch (err) {
+      // Ignore persistence failures (e.g. storage disabled).
+    }
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
 
   const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'info') => {
     const id = Date.now().toString();
@@ -175,6 +210,17 @@ const App: React.FC = () => {
   return (
     <ToastContext.Provider value={toastContextValue}>
       <Router>
+        {/* Light/Dark mode toggle */}
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+
         {/* Toast Notifications */}
         <div className="toast-container">
           {toasts.map(toast => (

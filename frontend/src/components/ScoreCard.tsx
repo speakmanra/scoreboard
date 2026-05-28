@@ -263,7 +263,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({ room, currentPlayer }) => {
                 <div key={score.id} className="player-card">
                   <h4>{score.player_name}</h4>
                   <div className="total-score">{score.score_value}</div>
-                  {score.notes && <p style={{ fontSize: '14px', color: '#666' }}>{score.notes}</p>}
+                  {score.notes && <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{score.notes}</p>}
                 </div>
               ))}
             </div>

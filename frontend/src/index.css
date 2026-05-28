@@ -1,3 +1,41 @@
+/* Theme tokens. Light values match the original hardcoded colors so the
+   default (light) appearance is unchanged; the [data-theme="dark"] block
+   below overrides them for dark mode. */
+:root {
+  color-scheme: light;
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --surface-alt: #f8f9fa;
+  --surface-alt-2: #e9ecef;
+  --surface-alt-3: #f1f3f4;
+  --text: #1a1a1a;
+  --text-muted: #666666;
+  --heading-muted: #495057;
+  --border: #dddddd;
+  --border-alt: #dee2e6;
+  --input-bg: #ffffff;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --primary: #007bff;
+  --bonus-bg: #fff3cd;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #121212;
+  --surface: #1e1e1e;
+  --surface-alt: #262626;
+  --surface-alt-2: #2e2e2e;
+  --surface-alt-3: #242424;
+  --text: #e8e8e8;
+  --text-muted: #9aa0a6;
+  --heading-muted: #c8c8c8;
+  --border: #3a3a3a;
+  --border-alt: #3a3a3a;
+  --input-bg: #2a2a2a;
+  --shadow: rgba(0, 0, 0, 0.6);
+  --bonus-bg: #4a4012;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,7 +43,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 code {
@@ -20,11 +60,12 @@ code {
 }
 
 .card {
-  background: white;
+  background: var(--surface);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow);
   padding: 20px;
   margin-bottom: 20px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn {
@@ -73,9 +114,12 @@ code {
 .form-group select {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 4px;
   font-size: 16px;
+  box-sizing: border-box;
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 .form-group input:focus,
@@ -93,25 +137,25 @@ code {
 }
 
 .player-card {
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
+  background: var(--surface-alt);
+  border: 1px solid var(--border-alt);
   border-radius: 6px;
   padding: 15px;
 }
 
 .player-card h3 {
   margin: 0 0 10px 0;
-  color: #495057;
+  color: var(--heading-muted);
 }
 
 .total-score {
   font-size: 24px;
   font-weight: bold;
-  color: #007bff;
+  color: var(--primary);
 }
 
 .room-code {
-  background: #e9ecef;
+  background: var(--surface-alt-2);
   padding: 10px;
   border-radius: 4px;
   font-family: monospace;
@@ -147,46 +191,46 @@ code {
 .scorecard-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border: 1px solid #ddd;
+  background: var(--surface);
+  border: 1px solid var(--border);
 }
 
 .scorecard-table th,
 .scorecard-table td {
   padding: 12px 8px;
   text-align: center;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   vertical-align: middle;
   min-width: 60px;
 }
 
 .scorecard-table th {
-  background: #f8f9fa;
+  background: var(--surface-alt);
   font-weight: 600;
-  color: #495057;
+  color: var(--heading-muted);
 }
 
 .scorecard-table td:first-child {
   text-align: left;
   font-weight: 500;
-  background: #f8f9fa;
+  background: var(--surface-alt);
   min-width: 120px;
 }
 
 .section-header td {
-  background: #e9ecef;
+  background: var(--surface-alt-2);
   font-weight: 600;
-  color: #495057;
+  color: var(--heading-muted);
   text-align: center;
 }
 
 .subtotal td {
-  background: #f1f3f4;
+  background: var(--surface-alt-3);
   font-weight: 600;
 }
 
 .bonus td {
-  background: #fff3cd;
+  background: var(--bonus-bg);
   font-weight: 600;
 }
 
@@ -211,20 +255,20 @@ code {
 }
 
 .scorecard-table .filled {
-  background: #f8f9fa;
-  color: #495057;
+  background: var(--surface-alt);
+  color: var(--heading-muted);
   font-weight: 600;
 }
 
 .scorecard-table .empty {
-  background: #f8f9fa;
-  color: #6c757d;
+  background: var(--surface-alt);
+  color: var(--text-muted);
 }
 
 /* Fixed editing cell - no size changes */
 .editing-cell {
   padding: 0;
-  background: #fff3cd;
+  background: var(--bonus-bg);
   border: 2px solid #ffc107;
   position: relative;
 }
@@ -353,14 +397,14 @@ code {
 .player-list {
   margin: 20px 0;
   padding: 15px;
-  background: #f8f9fa;
+  background: var(--surface-alt);
   border-radius: 6px;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--border-alt);
 }
 
 .player-list h3 {
   margin: 0 0 10px 0;
-  color: #495057;
+  color: var(--heading-muted);
 }
 
 .player-list ul {
@@ -370,7 +414,7 @@ code {
 
 .player-list li {
   margin: 5px 0;
-  color: #495057;
+  color: var(--heading-muted);
   font-weight: 500;
 }
 
@@ -378,5 +422,36 @@ code {
   text-align: center;
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid var(--border-alt);
+}
+
+/* Theme toggle button (fixed, visible on all routes) */
+.theme-toggle {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 6px var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary);
+}
+
+.theme-toggle:active {
+  transform: scale(0.94);
 } 
