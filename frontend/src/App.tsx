@@ -5,6 +5,7 @@ import JoinRoom from './components/JoinRoom';
 import ScoreCard from './components/ScoreCard';
 import { roomApi } from './services/api';
 import { Room } from './types';
+import { Dices, Sun, Moon, ArrowLeft, X } from 'lucide-react';
 
 interface Toast {
   id: string;
@@ -51,7 +52,9 @@ const Home: React.FC = () => {
     <div className="container">
       <div className="card">
         <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>
-          🎲 Scorecard App
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <Dices size={28} aria-hidden="true" /> Scorecard App
+          </span>
         </h1>
         <p style={{ textAlign: 'center', marginBottom: '30px', color: 'var(--text-muted)' }}>
           Create or join a room to start tracking scores for Yahtzee, Scrabble, or any game!
@@ -138,8 +141,12 @@ const RoomPage: React.FC = () => {
   return (
     <div>
       <div style={{ padding: '20px', background: 'var(--surface-alt)', borderBottom: '1px solid var(--border-alt)' }}>
-        <button onClick={handleBackToHome} className="btn btn-secondary">
-          ← Back to Home
+        <button
+          onClick={handleBackToHome}
+          className="btn btn-secondary"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+        >
+          <ArrowLeft size={16} aria-hidden="true" /> Back to Home
         </button>
       </div>
       <ScoreCard room={currentRoom} currentPlayer={currentPlayer} />
@@ -218,7 +225,7 @@ const App: React.FC = () => {
           aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
         >
-          {theme === 'dark' ? '☀️' : '🌙'}
+          {theme === 'dark' ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
         </button>
 
         {/* Toast Notifications */}
@@ -231,7 +238,7 @@ const App: React.FC = () => {
                 onClick={() => removeToast(toast.id)}
                 aria-label="Close notification"
               >
-                ×
+                <X size={16} aria-hidden="true" />
               </button>
             </div>
           ))}
