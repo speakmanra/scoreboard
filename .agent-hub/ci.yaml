@@ -1,0 +1,10 @@
+version: 1
+on:
+  - finalize
+  - manual
+timeout_minutes: 30
+steps:
+  - name: backend-tests
+    run: "cd backend && pip install -r requirements.txt && python manage.py test"
+  - name: frontend-tests
+    run: "cd frontend && npm ci && CI=true npm test -- --watchAll=false --passWithNoTests"
