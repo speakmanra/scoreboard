@@ -154,6 +154,28 @@ code {
   color: var(--primary);
 }
 
+/* Highlight the current player ("you") so it stands out on a shared board.
+   Identity is matched by player UUID, not name, so similar names don't clash. */
+.player-card.current-player {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.scorecard-table th.current-player {
+  background: var(--primary);
+  color: #fff;
+}
+
+.you-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.scorecard-table th.current-player .you-badge {
+  color: #fff;
+}
+
 .room-code {
   background: var(--surface-alt-2);
   padding: 10px;

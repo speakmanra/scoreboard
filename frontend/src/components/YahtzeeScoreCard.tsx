@@ -5,7 +5,7 @@ import { Dices, X } from 'lucide-react';
 
 interface YahtzeeScoreCardProps {
   room: Room;
-  currentPlayer: string;
+  currentPlayerId: string;
 }
 
 const YAHTZEE_CATEGORIES: { key: YahtzeeCategory; label: string; description: string }[] = [
@@ -35,7 +35,7 @@ interface Toast {
   type: 'success' | 'error' | 'info';
 }
 
-const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer }) => {
+const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayerId }) => {
   const [scores, setScores] = useState<Score[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
@@ -322,9 +322,18 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
               <thead>
                 <tr>
                   <th>Category</th>
-                  {players.map(player => (
-                    <th key={player.id}>{player.name}</th>
-                  ))}
+                  {players.map(player => {
+                    const isCurrentPlayer = player.id === currentPlayerId;
+                    return (
+                      <th
+                        key={player.id}
+                        className={isCurrentPlayer ? 'current-player' : undefined}
+                      >
+                        {player.name}
+                        {isCurrentPlayer && <span className="you-badge"> (You)</span>}
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>

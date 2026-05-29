@@ -10,14 +10,15 @@ const mockRoomApi = roomApi as jest.Mocked<typeof roomApi>;
 
 describe('CreateRoom', () => {
   const mockOnRoomCreated = jest.fn();
+  const mockShowToast = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders create room form', () => {
-    render(<CreateRoom onRoomCreated={mockOnRoomCreated} />);
-    
+    render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
+
     expect(screen.getByText('Create New Room')).toBeInTheDocument();
     expect(screen.getByLabelText('Room Name')).toBeInTheDocument();
     expect(screen.getByLabelText('Game Type')).toBeInTheDocument();
@@ -39,7 +40,7 @@ describe('CreateRoom', () => {
 
     mockRoomApi.create.mockResolvedValue(mockRoom);
 
-    render(<CreateRoom onRoomCreated={mockOnRoomCreated} />);
+    render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
 
     // Fill out the form
     fireEvent.change(screen.getByLabelText('Room Name'), {
@@ -57,14 +58,15 @@ describe('CreateRoom', () => {
         name: 'Test Room',
         game_type: 'yahtzee',
       });
-      expect(mockOnRoomCreated).toHaveBeenCalledWith('ABC12345');
+      // The component forwards the created Room object to its parent.
+      expect(mockOnRoomCreated).toHaveBeenCalledWith(mockRoom);
     });
   });
 
   it('shows error message when room creation fails', async () => {
     mockRoomApi.create.mockRejectedValue(new Error('API Error'));
 
-    render(<CreateRoom onRoomCreated={mockOnRoomCreated} />);
+    render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
 
     // Fill out the form
     fireEvent.change(screen.getByLabelText('Room Name'), {
@@ -74,21 +76,25 @@ describe('CreateRoom', () => {
     // Submit the form
     fireEvent.click(screen.getByRole('button', { name: 'Create Room' }));
 
+    // Errors surface through the Toast context, not inline text.
     await waitFor(() => {
-      expect(screen.getByText('Failed to create room. Please try again.')).toBeInTheDocument();
+      expect(mockShowToast).toHaveBeenCalledWith(
+        'Failed to create room. Please try again.',
+        'error'
+      );
     });
   });
 
   it('disables submit button when form is empty', () => {
-    render(<CreateRoom onRoomCreated={mockOnRoomCreated} />);
-    
+    render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
+
     const submitButton = screen.getByRole('button', { name: 'Create Room' });
     expect(submitButton).toBeDisabled();
   });
 
   it('enables submit button when form is filled', () => {
-    render(<CreateRoom onRoomCreated={mockOnRoomCreated} />);
-    
+    render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
+
     fireEvent.change(screen.getByLabelText('Room Name'), {
       target: { value: 'Test Room' },
     });
@@ -100,7 +106,7 @@ describe('CreateRoom', () => {
   it('shows loading state during submission', async () => {
     mockRoomApi.create.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
 
-    render(<CreateRoom onRoomCreated={mockOnRoomCreated} />);
+    render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
 
     // Fill out the form
     fireEvent.change(screen.getByLabelText('Room Name'), {
