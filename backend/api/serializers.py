@@ -75,13 +75,15 @@ class RoomSerializer(serializers.ModelSerializer):
             "name",
             "game_type",
             "room_code",
+            "status",
+            "host",
             "created_at",
             "is_active",
             "players",
             "scores",
             "player_count",
         ]
-        read_only_fields = ["id", "room_code", "created_at"]
+        read_only_fields = ["id", "room_code", "status", "host", "created_at"]
 
     def get_player_count(self, obj):
         """Get the number of active players in the room."""
@@ -93,8 +95,16 @@ class RoomCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Room
-        fields = ["name", "game_type", "room_code", "id", "created_at", "is_active"]
-        read_only_fields = ["room_code", "id", "created_at"]
+        fields = [
+            "name",
+            "game_type",
+            "room_code",
+            "status",
+            "id",
+            "created_at",
+            "is_active",
+        ]
+        read_only_fields = ["room_code", "status", "id", "created_at"]
 
     def create(self, validated_data):
         """Create a room with a unique room code."""

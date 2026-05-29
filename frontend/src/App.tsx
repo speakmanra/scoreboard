@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useParams, useNavigat
 import CreateRoom from './components/CreateRoom';
 import JoinRoom from './components/JoinRoom';
 import ScoreCard from './components/ScoreCard';
+import Lobby from './components/Lobby';
 import { roomApi } from './services/api';
 import { Room } from './types';
 import { Dices, Sun, Moon, ArrowLeft, X } from 'lucide-react';
@@ -101,8 +102,11 @@ const RoomPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { showToast } = React.useContext(ToastContext);
 
-  useEffect(() => {
-    const loadRoom = async () => {
+  // Fetch the room by code. On the initial load we resolve "you" from the URL
+  // and redirect home on failure; subsequent polling refreshes are silent so a
+  // transient error doesn't kick everyone out of the lobby.
+  const refreshRoom = useCallback(
+    async (initial = false) => {
       if (!roomCode) {
         navigate('/');
         return;
@@ -111,27 +115,45 @@ const RoomPage: React.FC = () => {
       try {
         const room = await roomApi.getByCode(roomCode);
         setCurrentRoom(room);
-        
-        // Get the current player's UUID from URL params if available.
-        // Identifying "you" by id (not name) avoids collisions between
-        // players with similar names (e.g. "Ryan" vs "Ryan2").
-        const urlParams = new URLSearchParams(window.location.search);
-        const playerId = urlParams.get('player_id');
-        if (playerId) {
-          setCurrentPlayerId(decodeURIComponent(playerId));
+
+        if (initial) {
+          // Identify "you" by UUID (not name) to avoid collisions between
+          // players with similar names (e.g. "Ryan" vs "Ryan2").
+          const urlParams = new URLSearchParams(window.location.search);
+          const playerId = urlParams.get('player_id');
+          if (playerId) {
+            setCurrentPlayerId(decodeURIComponent(playerId));
+          }
         }
       } catch (err) {
-        showToast('Room not found or error loading room', 'error');
-        console.error('Error loading room:', err);
-        navigate('/');
-        return;
+        if (initial) {
+          showToast('Room not found or error loading room', 'error');
+          console.error('Error loading room:', err);
+          navigate('/');
+        }
       } finally {
-        setLoading(false);
+        if (initial) {
+          setLoading(false);
+        }
       }
-    };
+    },
+    [roomCode, navigate, showToast]
+  );
 
-    loadRoom();
-  }, [roomCode, navigate, showToast]);
+  useEffect(() => {
+    refreshRoom(true);
+  }, [refreshRoom]);
+
+  // While the room is still in the lobby, poll so players see new joiners and
+  // automatically flip to the scorecard once the host starts the game. Polling
+  // stops as soon as the room becomes active.
+  useEffect(() => {
+    if (!currentRoom || currentRoom.status !== 'lobby') {
+      return;
+    }
+    const intervalId = setInterval(() => refreshRoom(), 3000);
+    return () => clearInterval(intervalId);
+  }, [currentRoom, refreshRoom]);
 
   const handleBackToHome = () => {
     navigate('/');
@@ -156,7 +178,16 @@ const RoomPage: React.FC = () => {
           <ArrowLeft size={16} aria-hidden="true" /> Back to Home
         </button>
       </div>
-      <ScoreCard room={currentRoom} currentPlayerId={currentPlayerId} />
+      {currentRoom.status === 'lobby' ? (
+        <Lobby
+          room={currentRoom}
+          currentPlayerId={currentPlayerId}
+          onStarted={() => refreshRoom()}
+          showToast={showToast}
+        />
+      ) : (
+        <ScoreCard room={currentRoom} currentPlayerId={currentPlayerId} />
+      )}
     </div>
   );
 };

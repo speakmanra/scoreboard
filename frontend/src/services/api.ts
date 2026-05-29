@@ -42,6 +42,13 @@ export const roomApi = {
     const response = await api.get(`/rooms/${roomId}/`);
     return response.data;
   },
+
+  // Start the game (host only). The backend returns 403 if playerId is not
+  // the room's host. Returns the updated Room (status flips to "active").
+  start: async (roomId: string, playerId: string): Promise<Room> => {
+    const response = await api.post(`/rooms/${roomId}/start/`, { player_id: playerId });
+    return response.data;
+  },
 };
 
 export const playerApi = {

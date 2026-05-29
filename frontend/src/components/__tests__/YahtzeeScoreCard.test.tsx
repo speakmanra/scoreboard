@@ -15,6 +15,8 @@ const room: Room = {
   name: 'Game Night',
   game_type: 'yahtzee',
   room_code: 'ABC12345',
+  status: 'active',
+  host: null,
   created_at: '2026-01-01T00:00:00Z',
   is_active: true,
   players: [],

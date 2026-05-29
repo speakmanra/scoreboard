@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { scoreApi, playerApi, roomApi } from '../services/api';
+import { scoreApi, playerApi } from '../services/api';
 import { Room, Score, Player, CreateScoreData } from '../types';
 import YahtzeeScoreCard from './YahtzeeScoreCard';
 import { X } from 'lucide-react';
@@ -26,8 +26,6 @@ const ScoreCard: React.FC<ScoreCardProps> = ({ room, currentPlayerId }) => {
     score_value: 0,
     notes: '',
   });
-  const [newPlayerName, setNewPlayerName] = useState('');
-  const [addingPlayer, setAddingPlayer] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'info') => {
@@ -83,24 +81,6 @@ const ScoreCard: React.FC<ScoreCardProps> = ({ room, currentPlayerId }) => {
     } catch (err) {
       showToast('Failed to add score. Please try again.', 'error');
       console.error('Error adding score:', err);
-    }
-  };
-
-  const handleAddPlayer = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPlayerName.trim()) return;
-
-    setAddingPlayer(true);
-    try {
-      await roomApi.join(room.id, { name: newPlayerName });
-      setNewPlayerName('');
-      showToast(`Player "${newPlayerName}" added successfully!`, 'success');
-      loadData(); // Reload data to show new player
-    } catch (err) {
-      showToast('Failed to add player. Please try again.', 'error');
-      console.error('Error adding player:', err);
-    } finally {
-      setAddingPlayer(false);
     }
   };
 
@@ -177,30 +157,6 @@ const ScoreCard: React.FC<ScoreCardProps> = ({ room, currentPlayerId }) => {
             );
           })}
         </div>
-      </div>
-
-      <div className="card">
-        <h2>Add Player</h2>
-        <form onSubmit={handleAddPlayer}>
-          <div className="form-group">
-            <label htmlFor="playerName">Player Name</label>
-            <input
-              type="text"
-              id="playerName"
-              value={newPlayerName}
-              onChange={(e) => setNewPlayerName(e.target.value)}
-              required
-              placeholder="Enter player name"
-            />
-          </div>
-          <button
-            type="submit"
-            className="btn"
-            disabled={addingPlayer || !newPlayerName.trim()}
-          >
-            {addingPlayer ? 'Adding...' : 'Add Player'}
-          </button>
-        </form>
       </div>
 
       <div className="card">

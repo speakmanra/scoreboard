@@ -73,6 +73,59 @@ class RoomViewSetTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Player.objects.count(), 1)  # No new player created
 
+    def test_room_starts_in_lobby_status(self):
+        """A freshly created room should begin in the lobby state."""
+        self.assertEqual(self.room.status, "lobby")
+
+    def test_first_player_to_join_becomes_host(self):
+        """The first player to join a room is recorded as its host."""
+        url = reverse("room-join", kwargs={"pk": self.room.pk})
+
+        first = self.client.post(url, {"name": "Host"}, format="json")
+        self.client.post(url, {"name": "Guest"}, format="json")
+
+        self.room.refresh_from_db()
+        self.assertEqual(str(self.room.host_id), first.data["id"])
+
+    def test_host_can_start_game(self):
+        """The host can start the game, moving the room to active."""
+        join_url = reverse("room-join", kwargs={"pk": self.room.pk})
+        host = self.client.post(join_url, {"name": "Host"}, format="json")
+
+        start_url = reverse("room-start", kwargs={"pk": self.room.pk})
+        response = self.client.post(
+            start_url, {"player_id": host.data["id"]}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.room.refresh_from_db()
+        self.assertEqual(self.room.status, "active")
+
+    def test_non_host_cannot_start_game(self):
+        """A non-host player attempting to start the game is forbidden."""
+        join_url = reverse("room-join", kwargs={"pk": self.room.pk})
+        self.client.post(join_url, {"name": "Host"}, format="json")
+        guest = self.client.post(join_url, {"name": "Guest"}, format="json")
+
+        start_url = reverse("room-start", kwargs={"pk": self.room.pk})
+        response = self.client.post(
+            start_url, {"player_id": guest.data["id"]}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.room.refresh_from_db()
+        self.assertEqual(self.room.status, "lobby")
+
+    def test_start_game_requires_player_id(self):
+        """Starting a game without a player_id returns a 400 error."""
+        join_url = reverse("room-join", kwargs={"pk": self.room.pk})
+        self.client.post(join_url, {"name": "Host"}, format="json")
+
+        start_url = reverse("room-start", kwargs={"pk": self.room.pk})
+        response = self.client.post(start_url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class ScoreViewSetTest(TestCase):
     """Test cases for ScoreViewSet."""

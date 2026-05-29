@@ -16,10 +16,28 @@ class Room(models.Model):
         ("tally", "Generic Tally"),
     ]
 
+    # Lifecycle of a room: it opens in a "lobby" where players gather and
+    # enter their own names, then the host moves it to "active" to begin play.
+    STATUS_CHOICES = [
+        ("lobby", "Lobby"),
+        ("active", "Active"),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     game_type = models.CharField(max_length=20, choices=GAME_TYPES)
     room_code = models.CharField(max_length=8, unique=True, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="lobby")
+    # The player who created/started the room. Only the host may start the game.
+    # Nullable because a room briefly exists before its first player joins, and
+    # SET_NULL keeps the room intact if that player record is ever removed.
+    host = models.ForeignKey(
+        "Player",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
     created_at = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
 

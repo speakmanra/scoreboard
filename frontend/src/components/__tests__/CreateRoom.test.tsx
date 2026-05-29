@@ -32,6 +32,8 @@ describe('CreateRoom', () => {
       name: 'Test Room',
       game_type: 'yahtzee' as const,
       room_code: 'ABC12345',
+      status: 'lobby' as const,
+      host: null,
       created_at: '2023-01-01T00:00:00Z',
       is_active: true,
       players: [],

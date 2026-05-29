@@ -3,6 +3,12 @@ export interface Room {
   name: string;
   game_type: 'yahtzee' | 'scrabble' | 'tally';
   room_code: string;
+  // Lifecycle: rooms open in the "lobby" where players gather and enter their
+  // own names, then the host flips them to "active" to begin play.
+  status: 'lobby' | 'active';
+  // UUID of the host player (the first to join / room creator), or null before
+  // anyone has joined. Only the host may start the game.
+  host: string | null;
   created_at: string;
   is_active: boolean;
   players: Player[];
