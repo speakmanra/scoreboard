@@ -5,6 +5,6 @@ on:
 timeout_minutes: 30
 steps:
   - name: backend-tests
-    run: "cd backend && pip install -r requirements.txt && python manage.py test"
+    run: "cd backend && python3 -m venv venv && venv/bin/pip install -r requirements.txt && venv/bin/python manage.py test"
   - name: frontend-tests
     run: "cd frontend && npm ci && CI=true npm test -- --watchAll=false --passWithNoTests"

@@ -32,7 +32,7 @@ export interface Score {
   score_value: number;
   notes: string;
   created_at: string;
-  category?: YahtzeeCategory; // For Yahtzee-specific scoring
+  category?: YahtzeeCategory | ''; // For Yahtzee-specific scoring; '' when no category
 }
 
 export interface RoomSummary {
