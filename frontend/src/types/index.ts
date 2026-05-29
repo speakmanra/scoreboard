@@ -3,6 +3,10 @@ export interface Room {
   name: string;
   game_type: 'yahtzee' | 'scrabble' | 'tally';
   room_code: string;
+  // Lobby = players gathering; active = host has started the game.
+  status: 'lobby' | 'active';
+  // Player UUID of the host (first to join), or null if not yet set.
+  host: string | null;
   created_at: string;
   is_active: boolean;
   players: Player[];

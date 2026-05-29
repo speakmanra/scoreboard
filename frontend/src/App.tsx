@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useParams, useNavigat
 import CreateRoom from './components/CreateRoom';
 import JoinRoom from './components/JoinRoom';
 import ScoreCard from './components/ScoreCard';
+import Lobby from './components/Lobby';
 import { roomApi } from './services/api';
 import { Room } from './types';
 import { Dices, Sun, Moon, ArrowLeft, X } from 'lucide-react';
@@ -101,6 +102,15 @@ const RoomPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { showToast } = React.useContext(ToastContext);
 
+  // Refetch the room by code and store it. Returns the room (or null) so the
+  // caller can react to the latest status without waiting for a re-render.
+  const refreshRoom = useCallback(async (): Promise<Room | null> => {
+    if (!roomCode) return null;
+    const room = await roomApi.getByCode(roomCode);
+    setCurrentRoom(room);
+    return room;
+  }, [roomCode]);
+
   useEffect(() => {
     const loadRoom = async () => {
       if (!roomCode) {
@@ -109,9 +119,8 @@ const RoomPage: React.FC = () => {
       }
 
       try {
-        const room = await roomApi.getByCode(roomCode);
-        setCurrentRoom(room);
-        
+        await refreshRoom();
+
         // Get the current player's UUID from URL params if available.
         // Identifying "you" by id (not name) avoids collisions between
         // players with similar names (e.g. "Ryan" vs "Ryan2").
@@ -131,7 +140,17 @@ const RoomPage: React.FC = () => {
     };
 
     loadRoom();
-  }, [roomCode, navigate, showToast]);
+  }, [roomCode, navigate, showToast, refreshRoom]);
+
+  // While the room is in the lobby, poll so players see new joins and pick up
+  // the host's "start" without a manual refresh. Polling stops once active.
+  useEffect(() => {
+    if (currentRoom?.status !== 'lobby') return;
+    const intervalId = setInterval(() => {
+      refreshRoom().catch(err => console.error('Error polling room:', err));
+    }, 3000);
+    return () => clearInterval(intervalId);
+  }, [currentRoom?.status, refreshRoom]);
 
   const handleBackToHome = () => {
     navigate('/');
@@ -156,7 +175,16 @@ const RoomPage: React.FC = () => {
           <ArrowLeft size={16} aria-hidden="true" /> Back to Home
         </button>
       </div>
-      <ScoreCard room={currentRoom} currentPlayerId={currentPlayerId} />
+      {currentRoom.status === 'lobby' ? (
+        <Lobby
+          room={currentRoom}
+          currentPlayerId={currentPlayerId}
+          onStarted={refreshRoom}
+          showToast={showToast}
+        />
+      ) : (
+        <ScoreCard room={currentRoom} currentPlayerId={currentPlayerId} />
+      )}
     </div>
   );
 };

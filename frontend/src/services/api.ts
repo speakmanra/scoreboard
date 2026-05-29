@@ -42,6 +42,12 @@ export const roomApi = {
     const response = await api.get(`/rooms/${roomId}/`);
     return response.data;
   },
+
+  // Start the game (host only — backend rejects non-hosts with 403)
+  start: async (roomId: string, playerId: string): Promise<Room> => {
+    const response = await api.post(`/rooms/${roomId}/start/`, { player_id: playerId });
+    return response.data;
+  },
 };
 
 export const playerApi = {

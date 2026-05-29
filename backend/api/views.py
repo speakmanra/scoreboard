@@ -65,8 +65,39 @@ class RoomViewSet(viewsets.ModelViewSet):
 
         # Create new player
         player = Player.objects.create(name=player_name, room=room)
+
+        # The first player to join a room becomes its host. The host is the
+        # only player allowed to start the game (see the `start` action).
+        if room.host_id is None:
+            room.host = player
+            room.save(update_fields=["host"])
+
         serializer = PlayerSerializer(player)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["post"])
+    def start(self, request, pk=None):
+        """Start the game for a room. Only the room's host may do this."""
+        room = self.get_object()
+        player_id = request.data.get("player_id")
+
+        if not player_id:
+            return Response(
+                {"error": "player_id is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if room.host_id is None or str(room.host_id) != str(player_id):
+            return Response(
+                {"error": "Only the host can start the game"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        room.status = "active"
+        room.save(update_fields=["status"])
+
+        serializer = RoomSerializer(room)
+        return Response(serializer.data)
 
 
 class PlayerViewSet(viewsets.ModelViewSet):

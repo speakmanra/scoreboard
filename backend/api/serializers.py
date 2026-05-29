@@ -75,13 +75,15 @@ class RoomSerializer(serializers.ModelSerializer):
             "name",
             "game_type",
             "room_code",
+            "status",
+            "host",
             "created_at",
             "is_active",
             "players",
             "scores",
             "player_count",
         ]
-        read_only_fields = ["id", "room_code", "created_at"]
+        read_only_fields = ["id", "room_code", "status", "host", "created_at"]
 
     def get_player_count(self, obj):
         """Get the number of active players in the room."""

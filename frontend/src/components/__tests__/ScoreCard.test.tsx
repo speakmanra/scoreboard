@@ -33,6 +33,8 @@ const baseRoom: Room = {
   name: 'Test Room',
   game_type: 'tally',
   room_code: 'ABC12345',
+  status: 'active',
+  host: RYAN.id,
   created_at: '2026-01-01T00:00:00Z',
   is_active: true,
   players: [RYAN, RYAN2],

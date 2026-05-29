@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { scoreApi, playerApi, roomApi } from '../services/api';
+import { scoreApi, playerApi } from '../services/api';
 import { Room, Score, Player, CreateScoreData, YahtzeeCategory } from '../types';
-import { Dices, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 interface YahtzeeScoreCardProps {
   room: Room;
@@ -39,9 +39,6 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
   const [scores, setScores] = useState<Score[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newPlayerName, setNewPlayerName] = useState('');
-  const [addingPlayer, setAddingPlayer] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
   const [editingCell, setEditingCell] = useState<EditingCell | null>(null);
   const [editingValue, setEditingValue] = useState('');
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -81,9 +78,6 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
       ]);
       setScores(scoresData);
       setPlayers(playersData);
-      
-      // Check if game has started (if there are any scores)
-      setGameStarted(scoresData.length > 0);
     } catch (err) {
       showToast('Failed to load room data', 'error');
       console.error('Error loading data:', err);
@@ -95,31 +89,6 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
   useEffect(() => {
     loadData();
   }, [loadData]);
-
-  const handleAddPlayer = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPlayerName.trim()) return;
-
-    setAddingPlayer(true);
-    try {
-      await roomApi.join(room.id, { name: newPlayerName });
-      setNewPlayerName('');
-      showToast(`Player "${newPlayerName}" added successfully!`, 'success');
-      loadData();
-    } catch (err) {
-      showToast('Failed to add player. Please try again.', 'error');
-      console.error('Error adding player:', err);
-    } finally {
-      setAddingPlayer(false);
-    }
-  };
-
-  const handleStartGame = () => {
-    if (players.length >= 1) {
-      setGameStarted(true);
-      showToast('Game started! You can now begin scoring.', 'success');
-    }
-  };
 
   const handleCellClick = (playerId: string, category: YahtzeeCategory) => {
     // Block edits to other players' columns.
@@ -281,61 +250,8 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
         <div className="room-code">Room Code: {room.room_code}</div>
       </div>
 
-      {!gameStarted ? (
-        // Setup Phase - Add Players
-        <div className="card">
-          <h2>Game Setup - Add Players</h2>
-          <p>Add all players before starting the game. You need at least 1 player to begin.</p>
-          
-          <div className="player-list">
-            <h3>Current Players ({players.length})</h3>
-            {players.length === 0 ? (
-              <p>No players added yet.</p>
-            ) : (
-              <ul>
-                {players.map(player => (
-                  <li key={player.id}>{player.name}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <form onSubmit={handleAddPlayer}>
-            <div className="form-group">
-              <label htmlFor="playerName">Player Name</label>
-              <input
-                type="text"
-                id="playerName"
-                value={newPlayerName}
-                onChange={(e) => setNewPlayerName(e.target.value)}
-                required
-                placeholder="Enter player name"
-              />
-            </div>
-            <button
-              type="submit"
-              className="btn"
-              disabled={addingPlayer || !newPlayerName.trim()}
-            >
-              {addingPlayer ? 'Adding...' : 'Add Player'}
-            </button>
-          </form>
-
-          {players.length >= 1 && (
-            <div className="start-game-section">
-              <button
-                onClick={handleStartGame}
-                className="btn btn-success"
-                style={{ marginTop: '20px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-              >
-                <Dices size={20} aria-hidden="true" /> Start Yahtzee Game
-              </button>
-            </div>
-          )}
-        </div>
-      ) : (
-        // Game Phase - Direct Cell Editing
-        <div className="card">
+      {/* Game Phase - Direct Cell Editing */}
+      <div className="card">
           <h2>Yahtzee Scorecard</h2>
           <p className="scorecard-instructions">
             {currentPlayerId
@@ -426,8 +342,7 @@ const YahtzeeScoreCard: React.FC<YahtzeeScoreCardProps> = ({ room, currentPlayer
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
