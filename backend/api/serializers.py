@@ -22,8 +22,11 @@ class ScoreSerializer(serializers.ModelSerializer):
     # Explicitly declare category so DRF's UniqueTogetherValidator does not
     # force it to be required (the validator treats all unique_together fields
     # as required unless the field already carries a default in attrs).
-    category = serializers.CharField(
-        required=False, allow_blank=True, default=""
+    # Use ChoiceField (not CharField) to preserve choices validation and the
+    # implicit max_length=20 enforced by the model.
+    category = serializers.ChoiceField(
+        choices=Score.YAHTZEE_CATEGORIES,
+        required=False, allow_blank=True, default="",
     )
 
     class Meta:
