@@ -332,7 +332,8 @@ code {
 /* Toast Notifications */
 .toast-container {
   position: fixed;
-  top: 20px;
+  /* Sits below the top-right theme toggle (44px button + margins) so they don't overlap */
+  top: 72px;
   right: 20px;
   z-index: 1000;
   display: flex;
@@ -457,7 +458,7 @@ code {
 .theme-toggle {
   position: fixed;
   top: 16px;
-  left: 16px;
+  right: 16px;
   z-index: 1000;
   width: 44px;
   height: 44px;
