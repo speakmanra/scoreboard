@@ -29,9 +29,11 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = React.useContext(ToastContext);
 
-  const handleRoomCreated = async (room: any) => {
+  const handleRoomCreated = async (room: any, playerId: string) => {
     try {
-      navigate(`/room/${room.room_code}`);
+      // Carry the creator's player UUID so they land on the scorecard with
+      // their own column identified as "you" (matching the join flow below).
+      navigate(`/room/${room.room_code}?player_id=${encodeURIComponent(playerId)}`);
     } catch (err) {
       showToast('Error setting created room', 'error');
       console.error('Error setting created room:', err);
