@@ -23,7 +23,7 @@ describe('CreateRoom', () => {
     expect(screen.getByLabelText('Room Name')).toBeInTheDocument();
     expect(screen.getByLabelText('Your Name')).toBeInTheDocument();
     expect(screen.getByLabelText('Game Type')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Create Room' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Create Game' })).toBeInTheDocument();
   });
 
   it('creates a room successfully', async () => {
@@ -64,7 +64,7 @@ describe('CreateRoom', () => {
     });
 
     // Submit the form
-    fireEvent.click(screen.getByRole('button', { name: 'Create Room' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create Game' }));
 
     await waitFor(() => {
       expect(mockRoomApi.create).toHaveBeenCalledWith({
@@ -92,7 +92,7 @@ describe('CreateRoom', () => {
     });
 
     // Submit the form
-    fireEvent.click(screen.getByRole('button', { name: 'Create Room' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create Game' }));
 
     // Errors surface through the Toast context, not inline text.
     await waitFor(() => {
@@ -106,14 +106,14 @@ describe('CreateRoom', () => {
   it('disables submit button when form is empty', () => {
     render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
 
-    const submitButton = screen.getByRole('button', { name: 'Create Room' });
+    const submitButton = screen.getByRole('button', { name: 'Create Game' });
     expect(submitButton).toBeDisabled();
   });
 
   it('keeps submit disabled until both room name and your name are filled', () => {
     render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
 
-    const submitButton = screen.getByRole('button', { name: 'Create Room' });
+    const submitButton = screen.getByRole('button', { name: 'Create Game' });
 
     fireEvent.change(screen.getByLabelText('Room Name'), {
       target: { value: 'Test Room' },
@@ -141,7 +141,7 @@ describe('CreateRoom', () => {
     });
 
     // Submit the form
-    fireEvent.click(screen.getByRole('button', { name: 'Create Room' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create Game' }));
 
     expect(screen.getByText('Creating...')).toBeInTheDocument();
   });

@@ -98,7 +98,7 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onRoomCreated, showToast }) => 
           className="btn"
           disabled={loading || !formData.name.trim() || !playerName.trim()}
         >
-          {loading ? 'Creating...' : 'Create Room'}
+          {loading ? 'Creating...' : 'Create Game'}
         </button>
       </form>
     </div>
