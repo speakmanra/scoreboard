@@ -40,7 +40,8 @@ const Home: React.FC = () => {
 
   const handleRoomJoined = async (roomCode: string, playerId: string) => {
     try {
-      const room = await roomApi.getByCode(roomCode);
+      // Verify the room exists before navigating (throws on a bad code).
+      await roomApi.getByCode(roomCode);
       // Carry the player's UUID (not name) so the scorecard can reliably
       // identify "you" even when player names collide (e.g. "Ryan"/"Ryan2").
       navigate(`/room/${roomCode}?player_id=${encodeURIComponent(playerId)}`);

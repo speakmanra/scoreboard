@@ -2,24 +2,27 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import App from '../../App';
+import { roomApi } from '../../services/api';
 
 // Mock the API services
 jest.mock('../../services/api');
+const mockRoomApi = roomApi as jest.Mocked<typeof roomApi>;
 
-// App renders its own <BrowserRouter>, so we must NOT wrap it in another
-// Router. Instead we drive the route via the browser history before rendering.
-const setPath = (path: string) => {
+// App renders its own <BrowserRouter>, so tests drive routing through the jsdom
+// history/location instead of wrapping it in another Router (which would throw
+// "You cannot render a <Router> inside another <Router>").
+const renderAt = (path: string) => {
   window.history.pushState({}, '', path);
+  return render(<App />);
 };
 
 describe('App Routing', () => {
-  afterEach(() => {
-    setPath('/');
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should render home page at root path', () => {
-    setPath('/');
-    render(<App />);
+    renderAt('/');
 
     expect(screen.getByText('Scorecard App')).toBeInTheDocument();
     expect(
@@ -28,16 +31,18 @@ describe('App Routing', () => {
   });
 
   it('should render room page at /room/:roomCode path', () => {
-    setPath('/room/ABC123');
-    render(<App />);
+    // Keep the room load pending so the component stays in its loading state
+    // for the duration of the synchronous assertion.
+    mockRoomApi.getByCode.mockReturnValue(new Promise<never>(() => {}));
+
+    renderAt('/room/ABC123');
 
     // Should show loading initially while the room is fetched.
     expect(screen.getByText('Loading room...')).toBeInTheDocument();
   });
 
   it('should redirect to home for invalid paths', () => {
-    setPath('/invalid-path');
-    render(<App />);
+    renderAt('/invalid-path');
 
     expect(screen.getByText('Scorecard App')).toBeInTheDocument();
   });
