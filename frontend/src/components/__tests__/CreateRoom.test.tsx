@@ -19,7 +19,7 @@ describe('CreateRoom', () => {
   it('renders create room form', () => {
     render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
 
-    expect(screen.getByText('Create New Room')).toBeInTheDocument();
+    expect(screen.getByText('New Game')).toBeInTheDocument();
     expect(screen.getByLabelText('Room Name')).toBeInTheDocument();
     expect(screen.getByLabelText('Your Name')).toBeInTheDocument();
     expect(screen.getByLabelText('Game Type')).toBeInTheDocument();

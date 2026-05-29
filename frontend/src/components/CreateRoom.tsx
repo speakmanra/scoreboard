@@ -49,7 +49,7 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onRoomCreated, showToast }) => 
 
   return (
     <div className="card">
-      <h2>Create New Room</h2>
+      <h2>New Game</h2>
       
       <form onSubmit={handleSubmit}>
         <div className="form-group">
