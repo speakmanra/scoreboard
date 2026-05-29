@@ -24,7 +24,7 @@ describe('App Routing', () => {
   it('should render home page at root path', () => {
     renderAt('/');
 
-    expect(screen.getByText('Scorecard App')).toBeInTheDocument();
+    expect(screen.getByText('Scorecard')).toBeInTheDocument();
     expect(
       screen.getByText(/Create or join a room to start tracking scores/)
     ).toBeInTheDocument();
@@ -44,6 +44,6 @@ describe('App Routing', () => {
   it('should redirect to home for invalid paths', () => {
     renderAt('/invalid-path');
 
-    expect(screen.getByText('Scorecard App')).toBeInTheDocument();
+    expect(screen.getByText('Scorecard')).toBeInTheDocument();
   });
 });
