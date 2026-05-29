@@ -21,6 +21,7 @@ describe('CreateRoom', () => {
 
     expect(screen.getByText('Create New Room')).toBeInTheDocument();
     expect(screen.getByLabelText('Room Name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Your Name')).toBeInTheDocument();
     expect(screen.getByLabelText('Game Type')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Create Room' })).toBeInTheDocument();
   });
@@ -38,13 +39,25 @@ describe('CreateRoom', () => {
       player_count: 0,
     };
 
+    const mockPlayer = {
+      id: 'player-1',
+      name: 'Ryan',
+      room: '1',
+      joined_at: '2023-01-01T00:00:00Z',
+      is_active: true,
+    };
+
     mockRoomApi.create.mockResolvedValue(mockRoom);
+    mockRoomApi.join.mockResolvedValue(mockPlayer);
 
     render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
 
     // Fill out the form
     fireEvent.change(screen.getByLabelText('Room Name'), {
       target: { value: 'Test Room' },
+    });
+    fireEvent.change(screen.getByLabelText('Your Name'), {
+      target: { value: 'Ryan' },
     });
     fireEvent.change(screen.getByLabelText('Game Type'), {
       target: { value: 'yahtzee' },
@@ -58,8 +71,10 @@ describe('CreateRoom', () => {
         name: 'Test Room',
         game_type: 'yahtzee',
       });
-      // The component forwards the created Room object to its parent.
-      expect(mockOnRoomCreated).toHaveBeenCalledWith(mockRoom);
+      // The creator joins their own room as the first player.
+      expect(mockRoomApi.join).toHaveBeenCalledWith('1', { name: 'Ryan' });
+      // The component forwards the Room and the creator's player id to its parent.
+      expect(mockOnRoomCreated).toHaveBeenCalledWith(mockRoom, 'player-1');
     });
   });
 
@@ -71,6 +86,9 @@ describe('CreateRoom', () => {
     // Fill out the form
     fireEvent.change(screen.getByLabelText('Room Name'), {
       target: { value: 'Test Room' },
+    });
+    fireEvent.change(screen.getByLabelText('Your Name'), {
+      target: { value: 'Ryan' },
     });
 
     // Submit the form
@@ -92,14 +110,20 @@ describe('CreateRoom', () => {
     expect(submitButton).toBeDisabled();
   });
 
-  it('enables submit button when form is filled', () => {
+  it('keeps submit disabled until both room name and your name are filled', () => {
     render(<CreateRoom onRoomCreated={mockOnRoomCreated} showToast={mockShowToast} />);
+
+    const submitButton = screen.getByRole('button', { name: 'Create Room' });
 
     fireEvent.change(screen.getByLabelText('Room Name'), {
       target: { value: 'Test Room' },
     });
+    // Room name alone is not enough; the creator's name is also required.
+    expect(submitButton).toBeDisabled();
 
-    const submitButton = screen.getByRole('button', { name: 'Create Room' });
+    fireEvent.change(screen.getByLabelText('Your Name'), {
+      target: { value: 'Ryan' },
+    });
     expect(submitButton).not.toBeDisabled();
   });
 
@@ -111,6 +135,9 @@ describe('CreateRoom', () => {
     // Fill out the form
     fireEvent.change(screen.getByLabelText('Room Name'), {
       target: { value: 'Test Room' },
+    });
+    fireEvent.change(screen.getByLabelText('Your Name'), {
+      target: { value: 'Ryan' },
     });
 
     // Submit the form
