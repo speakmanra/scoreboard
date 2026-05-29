@@ -58,7 +58,7 @@ const Home: React.FC = () => {
       <div className="card">
         <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <Dices size={28} aria-hidden="true" /> Scorecard App
+            <Dices size={28} aria-hidden="true" /> Scorecard
           </span>
         </h1>
         <p style={{ textAlign: 'center', marginBottom: '30px', color: 'var(--text-muted)' }}>

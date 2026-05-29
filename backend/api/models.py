@@ -84,7 +84,7 @@ class Score(models.Model):
     round_number = models.PositiveIntegerField(default=1)
     score_value = models.IntegerField()
     category = models.CharField(
-        max_length=20, choices=YAHTZEE_CATEGORIES, blank=True, null=True
+        max_length=20, choices=YAHTZEE_CATEGORIES, blank=True, default=""
     )
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)

@@ -19,6 +19,12 @@ class ScoreSerializer(serializers.ModelSerializer):
     """Serializer for Score model."""
 
     player_name = serializers.CharField(source="player.name", read_only=True)
+    # Explicitly declare category so DRF's UniqueTogetherValidator does not
+    # force it to be required (the validator treats all unique_together fields
+    # as required unless the field already carries a default in attrs).
+    category = serializers.CharField(
+        required=False, allow_blank=True, default=""
+    )
 
     class Meta:
         model = Score
