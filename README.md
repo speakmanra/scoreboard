@@ -14,6 +14,8 @@ A real-time shared scorecard application for games like Yahtzee, Scrabble, and g
 - **Game Setup Flow**: Add all players before starting the game (Yahtzee)
 - **Keyboard Shortcuts**: Enter to save, Escape to cancel cell editing
 - **Toast Notifications**: Non-disruptive error and success messages
+- **Per-Player Editing**: Joined players can only edit their own column; their header shows a `(You)` badge
+- **Light / Dark Theme**: Floating toggle that persists across visits and otherwise follows the OS preference
 
 ## Tech Stack
 
@@ -28,14 +30,18 @@ A real-time shared scorecard application for games like Yahtzee, Scrabble, and g
 
 - **React 18**: Modern JavaScript framework
 - **TypeScript**: Type-safe JavaScript
+- **React Router 6**: Client-side routing
 - **Axios**: HTTP client for API calls
+- **lucide-react**: Inline SVG icons that inherit the active theme
 - **CSS Grid/Flexbox**: Modern responsive layout
+
+> The browser only ever talks to the frontend. In development the CRA dev server proxies `/api`, `/admin`, and `/static` to Django on port 8000 (see `frontend/src/setupProxy.js`), so requests stay same-origin and CORS never enters the browser path.
 
 ### Testing
 
-- **pytest**: Python testing framework
+- **pytest / pytest-django**: Python testing framework with coverage
 - **Jest & React Testing Library**: JavaScript testing
-- **Coverage**: Code coverage reporting
+- **Cypress**: End-to-end flow testing
 
 ## Quick Start
 
@@ -72,6 +78,14 @@ A real-time shared scorecard application for games like Yahtzee, Scrabble, and g
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:8000/api/
    - Django Admin: http://localhost:8000/admin/
+
+### Docker Compose Preview
+
+A two-service preview (Django on `:8000`, CRA dev server on `:3000`) is available via Docker:
+
+```bash
+docker compose up
+```
 
 ## Usage
 
@@ -176,6 +190,12 @@ A real-time shared scorecard application for games like Yahtzee, Scrabble, and g
 
 ```bash
 ./scripts/test-frontend.sh
+```
+
+### End-to-End Tests (Cypress)
+
+```bash
+./scripts/test-e2e.sh
 ```
 
 ### API Validation
