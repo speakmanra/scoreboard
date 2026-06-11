@@ -12,7 +12,6 @@ class Room(models.Model):
 
     GAME_TYPES = [
         ("yahtzee", "Yahtzee"),
-        ("scrabble", "Scrabble"),
         ("tally", "Generic Tally"),
     ]
 

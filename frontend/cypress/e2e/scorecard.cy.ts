@@ -33,7 +33,7 @@ describe('Scorecard Application', () => {
   it('should join an existing room', () => {
     // First create a room to join
     cy.get('input[name="name"]').first().type('Room to Join')
-    cy.get('select[name="game_type"]').first().select('scrabble')
+    cy.get('select[name="game_type"]').first().select('tally')
     cy.get('button').contains('Create Room').first().click()
     cy.wait(500)
     

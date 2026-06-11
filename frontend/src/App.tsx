@@ -62,7 +62,7 @@ const Home: React.FC = () => {
           </span>
         </h1>
         <p style={{ textAlign: 'center', marginBottom: '30px', color: 'var(--text-muted)' }}>
-          Create or join a room to start tracking scores for Yahtzee, Scrabble, or any game!
+          Create or join a room to start tracking scores for Yahtzee or any game!
         </p>
       </div>
 

@@ -88,7 +88,6 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onRoomCreated, showToast }) => 
             required
           >
             <option value="yahtzee">Yahtzee</option>
-            <option value="scrabble">Scrabble</option>
             <option value="tally">Generic Tally</option>
           </select>
         </div>

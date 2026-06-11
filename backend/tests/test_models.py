@@ -23,7 +23,7 @@ class RoomModelTest(TestCase):
 
     def test_room_str_representation(self):
         """Test string representation of room."""
-        room = Room.objects.create(name="Test Room", game_type="scrabble")
+        room = Room.objects.create(name="Test Room", game_type="tally")
 
         expected = f"Test Room ({room.room_code})"
         self.assertEqual(str(room), expected)
@@ -31,7 +31,7 @@ class RoomModelTest(TestCase):
     def test_room_code_uniqueness(self):
         """Test that room codes are unique."""
         room1 = Room.objects.create(name="Room 1", game_type="yahtzee")
-        room2 = Room.objects.create(name="Room 2", game_type="scrabble")
+        room2 = Room.objects.create(name="Room 2", game_type="tally")
 
         self.assertNotEqual(room1.room_code, room2.room_code)
         self.assertEqual(len(room1.room_code), 8)

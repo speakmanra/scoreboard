@@ -20,7 +20,7 @@ class RoomViewSetTest(TestCase):
     def test_create_room(self):
         """Test creating a new room."""
         url = reverse("room-list")
-        data = {"name": "New Room", "game_type": "scrabble"}
+        data = {"name": "New Room", "game_type": "tally"}
 
         response = self.client.post(url, data, format="json")
 
@@ -28,7 +28,7 @@ class RoomViewSetTest(TestCase):
         self.assertEqual(Room.objects.count(), 2)
 
         room = Room.objects.get(name="New Room")
-        self.assertEqual(room.game_type, "scrabble")
+        self.assertEqual(room.game_type, "tally")
         self.assertTrue(len(room.room_code) == 8)
 
     def test_get_room_by_code(self):

@@ -1,7 +1,7 @@
 export interface Room {
   id: string;
   name: string;
-  game_type: 'yahtzee' | 'scrabble' | 'tally';
+  game_type: 'yahtzee' | 'tally';
   room_code: string;
   created_at: string;
   is_active: boolean;
@@ -44,7 +44,7 @@ export interface RoomSummary {
 
 export interface CreateRoomData {
   name: string;
-  game_type: 'yahtzee' | 'scrabble' | 'tally';
+  game_type: 'yahtzee' | 'tally';
 }
 
 export interface JoinRoomData {
