@@ -32,7 +32,7 @@ const Home: React.FC = () => {
   const handleRoomCreated = async (room: any, playerId: string) => {
     try {
       // Carry the creator's player UUID so they land on the scorecard with
-      // their own column identified as "you" (matching the join flow below).
+      // their own column identified as "you"
       navigate(`/room/${room.room_code}?player_id=${encodeURIComponent(playerId)}`);
     } catch (err) {
       showToast('Error setting created room', 'error');
